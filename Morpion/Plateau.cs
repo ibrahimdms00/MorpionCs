@@ -21,6 +21,28 @@ namespace Morpion
             Joueur O = new Joueur("O");
         }
 
+        #region Logique de conversion 
+        public void CaseToGrille(int casechoisi, out int i, out int j)
+        {
+            i = -1; j = -1;
+            if (casechoisi == 1) { i = 0; j = 0; }
+            else if (casechoisi == 2) { i = 0; j = 1; }
+            else if (casechoisi == 3) { i = 0; j = 2; }
+            else if (casechoisi == 4) { i = 1; j = 0; }
+            else if (casechoisi == 5) { i = 1; j = 1; }
+            else if (casechoisi == 6) { i = 1; j = 2; }
+            else if (casechoisi == 7) { i = 2; j = 0; }
+            else if (casechoisi == 8) { i = 2; j = 1; }
+            else if (casechoisi == 9) { i = 2; j = 2; }
+            else if (i == -1 && j == -1)
+            {
+                Console.WriteLine("Erreur : Valeur invalide ! Choisissez un chiffre entre 1 et 9.");
+            }
+            else
+                Console.WriteLine("erreur100");
+        }
+
+
         public void RemplirTableau()
         { 
             int k = 0;
@@ -34,7 +56,7 @@ namespace Morpion
             }
         }
 
-        public void VerifVictoire(int Gagnant)
+        public void VerifVictoire(out int Gagnant)
         {
             int i = 0; int j = 0;
             Gagnant = -1;
@@ -81,8 +103,40 @@ namespace Morpion
             }
 
         }
+        #endregion
+        #region Affichage Tableau
+        public void AffichageSeule()
+        {
+            Console.Clear();
+            Console.WriteLine("========= MORPION =========");
+            for (int i = 0; i < 3; i++)
+            {
+                // On dessine une ligne
+                Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
+                if (i < 2) Console.WriteLine("-----------");
+            }
+            Console.WriteLine(" Votre choix ? : ");
+        }
+
+        public void AffichageComplet()
+        {
+            this.AffichageComplet();
+            string rep = Console.ReadLine();
+            CaseToGrille(Convert.ToInt32(rep), out int i, out int j);
+            VerifVictoire(out int Gagnant);
+            if (Gagnant == 1)
+            {
+                Console.WriteLine("Le joueur X a gagné !");
+            }
+            else if (Gagnant == 0)
+            {
+                Console.WriteLine("Le joueur O a gagné !");
+            }
+
+        }
 
 
+        #endregion
 
     }
 }
