@@ -1,13 +1,6 @@
 ﻿using Morpion;
 string rep;
-Plateau p = new Plateau();
+Plateau p = new Plateau("X","O","X");
 p.RemplirTableau();
 bool a = true;
-
-while (a == true)
-{
-    p.AffichageComplet();
-    rep = Console.ReadLine();
-
-
-}
+p.AffichageComplet();

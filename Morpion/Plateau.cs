@@ -9,16 +9,89 @@ namespace Morpion
     class Plateau
     {
         private string[,] grille;
+        private Joueur X;
+        private Joueur O;
+        private Joueur T;
         public string[,] Grille
         {
             get { return this.grille; }
             set { grille = value; }
         }
-        public Plateau ()
+        public Plateau (string JX, string JO,string commence)
         {
             grille = new string[3, 3];
-            Joueur X = new Joueur("X");
-            Joueur O = new Joueur("O");
+            this.X = new Joueur(JX);
+            this.O = new Joueur(JO);
+            this.T = new Joueur("RAS");
+            if (commence == JX)
+            {
+                this.T.Id = this.X.Id;
+            }
+            else if (commence == JO) 
+            {
+                this.T.Id = this.X.Id;
+            }
+            else 
+            { 
+                Console.WriteLine("Erreur : Précisez le joueur qui commence ");
+            }
+        }
+        
+        public string JoueurSuivant()
+        {
+            string rep;
+            if (this.T.Id == this.X.Id)
+            {
+                this.T.Id = this.O.Id;
+                rep = "J1";
+            }
+            else if (this.T.Id == this.O.Id)
+            { 
+                this.T.Id = this.X.Id;
+                rep = "J2";
+            }
+            else
+            {
+                rep = "Erreur methode JoueurSuivant";
+            }
+            return rep;
+            ;
+        }
+       
+        public bool Vide()
+        {
+            int k = 1;
+            bool rep;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Grille[i, j] != k.ToString())
+                    {
+                        rep = false;
+                    }
+                    k++; // k= k+1
+                }
+            }
+            rep = true;
+            return rep;
+        }
+        
+        public bool Plein()
+        {
+            bool rep;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Grille[i, j] != "X" || Grille[i, j] != "O")
+                    {
+                        rep = false;
+                    }
+                }
+            }
+            rep = true;
+            return rep;
         }
 
         #region Logique de conversion 
@@ -41,8 +114,6 @@ namespace Morpion
             else
                 Console.WriteLine("erreur100");
         }
-
-
         public void RemplirTableau()
         { 
             int k = 0;
@@ -55,11 +126,10 @@ namespace Morpion
                 }
             }
         }
-
-        public void VerifVictoire(out int Gagnant)
+        public int VerifVictoire()
         {
             int i = 0; int j = 0;
-            Gagnant = -1;
+            int Gagnant = -1;
             for (i = 0; i < 3; i++)
             {
                 for (j = 0; j < 3; j++)
@@ -101,11 +171,28 @@ namespace Morpion
                 { Gagnant = 0; }
 
             }
-
+            return Gagnant;
         }
+        public void VerifFin(int g, bool f)
+        {
+            if (Plein() == true)
+            {
+                Console.WriteLine("Match nul !");
+                f = false;
+            }
+            else if (VerifVictoire() != -1)
+            {
+                AffichageVictoire(g, f);
+            }
+            else if (VerifVictoire() == -1)
+            {
+                Console.WriteLine("Partie en cours...");
+            }
+        }
+
         #endregion
         #region Affichage Tableau
-        public void AffichageSeule()
+        public void Affichage(string c)
         {
             Console.Clear();
             Console.WriteLine("========= MORPION =========");
@@ -115,27 +202,58 @@ namespace Morpion
                 Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
                 if (i < 2) Console.WriteLine("-----------");
             }
+            if (c == "choix")
+            {
+              this.AffichageChoix();
+            }
+        }
+        
+        public void AffichageChoix()
+        {
+            Console.WriteLine("C'est au tour de : " + this.T.Id);
             Console.WriteLine(" Votre choix ? : ");
         }
-
-        public void AffichageComplet()
+        public void AffichageVictoire(int Gagnant,bool a )
         {
-            this.AffichageComplet();
-            string rep = Console.ReadLine();
-            CaseToGrille(Convert.ToInt32(rep), out int i, out int j);
-            VerifVictoire(out int Gagnant);
             if (Gagnant == 1)
             {
                 Console.WriteLine("Le joueur X a gagné !");
+                a = false;
             }
             else if (Gagnant == 0)
             {
                 Console.WriteLine("Le joueur O a gagné !");
+                a = false;
             }
-
+            else
+            {
+                Console.WriteLine("Partie en cours...");
+            }
         }
 
+        public void AffichageComplet()
+        {
+            // initialisation de la partie
+            bool partieEnCours = true;
+            int gagnant = -1;
+            while (partieEnCours == true)
+            {
+                this.Affichage("choix");
+                string rep = Console.ReadLine();
+                T.Jouer(Convert.ToInt32(rep), this);
 
+                // Affichage si fin de la manche
+                VerifFin(gagnant,partieEnCours);
+                if (gagnant != -1)
+                {
+                    partieEnCours = false;
+                }
+
+
+                this.Affichage(" ");
+                JoueurSuivant();
+            }
+        }
         #endregion
 
     }
