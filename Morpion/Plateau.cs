@@ -17,6 +17,25 @@ namespace Morpion
             get { return this.grille; }
             set { grille = value; }
         }
+        // Dans Plateau.cs
+        public static void LancerJeu()
+        {
+            Console.WriteLine("=== INITIALISATION DU MORPION ===");
+
+            Console.Write("Nom du Joueur 1 (X) : ");
+            string input1 = Console.ReadLine();
+            // Si input1 est vide ou ne contient que des espaces, on met "Joueur 1"
+            string j1 = string.IsNullOrWhiteSpace(input1) ? "Joueur 1" : input1;
+
+            Console.Write("Nom du Joueur 2 (O) : ");
+            string input2 = Console.ReadLine();
+            string j2 = string.IsNullOrWhiteSpace(input2) ? "Joueur 2" : input2;
+
+            Plateau monJeu = new Plateau(j1, j2, j1);
+            monJeu.Menu(j1, j2);
+        }
+
+
         public Plateau (string JX, string JO,string commence)
         {
             grille = new string[3, 3];
@@ -36,14 +55,22 @@ namespace Morpion
                 Console.WriteLine("Erreur : Précisez le joueur qui commence ");
             }
         }
-        public void Menu()
+        public void Menu(string j1, string j2)
         {
             bool quitter = false;
             while (quitter == false)
             {
                 Console.Clear();
                 Console.WriteLine("========= MORPION =========");
-                Console.WriteLine("Salut XXX");
+                if (j1 == "Joueur 1" && j2 == "Joueur 2")
+                {
+                    Console.WriteLine("Bienvenue dans le Morpion !");
+                }
+                else
+                {
+                    Console.WriteLine($"Salut {j1} et {j2}");
+                }
+
                 Console.WriteLine("1/ Jouer une partie en local");
                 Console.WriteLine("2/ Jouer une partie contre l'IA (en cours de développement)");
                 Console.WriteLine("3/ Paramètres");
