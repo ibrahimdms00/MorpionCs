@@ -29,15 +29,54 @@ namespace Morpion
             }
             else if (commence == JO) 
             {
-                this.T.Id = this.X.Id;
+                this.T.Id = this.O.Id;
             }
             else 
             { 
                 Console.WriteLine("Erreur : Précisez le joueur qui commence ");
             }
         }
-        
-        public string JoueurSuivant()
+        public void Menu()
+        {
+            bool quitter = false;
+            while (quitter == false)
+            {
+                Console.Clear();
+                Console.WriteLine("========= MORPION =========");
+                Console.WriteLine("Salut XXX");
+                Console.WriteLine("1/ Jouer une partie en local");
+                Console.WriteLine("2/ Jouer une partie contre l'IA (en cours de développement)");
+                Console.WriteLine("3/ Paramètres");
+                Console.WriteLine("4/ Quitter le jeu");
+                Console.WriteLine("Votre choix ? : ");
+                string? rep = Console.ReadLine();
+                int choix = Convert.ToInt32(rep);
+                VerifRep(ref choix);
+                switch (choix)
+                {
+                    case 1:
+                        RemplirTableau();
+                        this.BouclePartieLocal();
+                        break;
+                    case 2:
+                        Console.WriteLine("En cours de développement...");
+                        break;
+                    case 3:
+                        Console.WriteLine("En cours de développement...");
+                        break;
+                    case 4:
+                        Console.WriteLine("Merci d'avoir joué !");
+                        quitter = true;
+                        break;
+                    default:
+                        Console.WriteLine("Erreur : Choisissez un chiffre entre 1 et 4.");
+                        break;
+                }
+            }
+
+        }
+
+        private string JoueurSuivant()
         {
             string rep;
             if (this.T.Id == this.X.Id)
@@ -55,13 +94,13 @@ namespace Morpion
                 rep = "Erreur methode JoueurSuivant";
             }
             return rep;
-            ;
+            
         }
        
-        public bool Vide()
+        private bool Vide()
         {
             int k = 1;
-            bool rep;
+            bool rep = true;
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -73,24 +112,24 @@ namespace Morpion
                     k++; // k= k+1
                 }
             }
-            rep = true;
             return rep;
         }
         
         public bool Plein()
         {
-            bool rep;
+            bool rep = true;
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    if (Grille[i, j] != "X" || Grille[i, j] != "O")
+                    if (Grille[i, j] != "X" && Grille[i, j] != "O")
                     {
                         rep = false;
                     }
+                    
                 }
             }
-            rep = true;
+            
             return rep;
         }
 
@@ -114,7 +153,7 @@ namespace Morpion
             else
                 Console.WriteLine("erreur100");
         }
-        public void RemplirTableau()
+        private void RemplirTableau()
         { 
             int k = 0;
             for (int i = 0; i < 3; i++)
@@ -126,7 +165,7 @@ namespace Morpion
                 }
             }
         }
-        public int VerifVictoire()
+        private int VerifVictoire()
         {
             int i = 0; int j = 0;
             int Gagnant = -1;
@@ -136,25 +175,25 @@ namespace Morpion
                 {
                     if (Grille[0, j] == Grille[1, j] && Grille[1, j] == Grille[2, j])  // |
                     {
-                        if (Grille[0, 0] == "X")
+                        if (Grille[0, j] == "X")
                         { Gagnant = 1; }
-                        else if (Grille[0, 0] == "O")
+                        else if (Grille[0, j] == "O")
                         { Gagnant = 0; }
 
                     }
 
                     if (Grille[i, 0] == Grille[i, 1] && Grille[i, 1] == Grille[i, 2]) // -
                     {
-                        if (Grille[0, 0] == "X")
+                        if (Grille[i, 0] == "X")
                         { Gagnant = 1; }
-                        else if (Grille[0, 0] == "O")
+                        else if (Grille[i, 0] == "O")
                         { Gagnant = 0; }
 
                     }
                 }
             }
 
-            if (Grille[0, 0] == Grille[1, 1] && Grille[1, 1] == Grille[0, 2]) // \
+            if (Grille[0, 0] == Grille[1, 1] && Grille[1, 1] == Grille[2, 2]) // \
             {
                 if (Grille[0, 0] == "X")
                 { Gagnant = 1; }
@@ -173,88 +212,132 @@ namespace Morpion
             }
             return Gagnant;
         }
-        public void VerifFin(int g, bool f)
+        private bool VerifFin(ref int g)
         {
-            if (Plein() == true)
+            bool f = true;
+            g = VerifVictoire(); // g = -1 : pas de gagnant, g = 0 : O gagne, g = 1 : X gagne
+            if (this.Plein() == true)
             {
                 Console.WriteLine("Match nul !");
                 f = false;
             }
-            else if (VerifVictoire() != -1)
+            else if (VerifVictoire() == 0 || VerifVictoire() == 1)
             {
-                AffichageVictoire(g, f);
+                f= false;
             }
-            else if (VerifVictoire() == -1)
+            return f;
+        }
+
+        private void VerifRep(ref int casechoisi)
+        {
+            while (casechoisi != 0 &&casechoisi != 1 && casechoisi != 2 && casechoisi != 3 && casechoisi != 4 && casechoisi != 5 && casechoisi != 6 && casechoisi != 7 && casechoisi != 8 && casechoisi != 9)
             {
-                Console.WriteLine("Partie en cours...");
+                Console.Clear();
+                Console.WriteLine("Erreur : Choisissez un chiffre entre 1 et 9.");
+                Console.WriteLine("Cliquez sur ENTREE pour continuer");
+                Console.ReadLine();
+                Console.Clear();
+                this.Affichage("SansClear");
+                this.AffichageChoix();
+                casechoisi = Convert.ToInt32(Console.ReadLine());
             }
         }
 
         #endregion
         #region Affichage Tableau
-        public void Affichage(string c)
+        private void Affichage(string c)
         {
-            Console.Clear();
-            Console.WriteLine("========= MORPION =========");
-            for (int i = 0; i < 3; i++)
-            {
-                // On dessine une ligne
-                Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
-                if (i < 2) Console.WriteLine("-----------");
-            }
+            
             if (c == "choix")
             {
-              this.AffichageChoix();
+                Console.Clear();
+                Console.WriteLine("========= MORPION =========");
+                for (int i = 0; i < 3; i++)
+                {
+                    // On dessine une ligne
+                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
+                    if (i < 2) Console.WriteLine("-----------");
+                }
+                this.AffichageChoix();
+            }
+            if (c == "SansClear")
+            {
+                Console.WriteLine("========= MORPION =========");
+                for (int i = 0; i < 3; i++)
+                {
+                    // On dessine une ligne
+                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
+                    if (i < 2) Console.WriteLine("-----------");
+                }
+            }
+            if (c == "sanschoix")
+            {
+                Console.Clear();
+                Console.WriteLine("========= MORPION =========");
+                for (int i = 0; i < 3; i++)
+                {
+                    // On dessine une ligne
+                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
+                    if (i < 2) Console.WriteLine("-----------");
+                }
             }
         }
-        
-        public void AffichageChoix()
+        private void AffichageChoix()
         {
+            Console.WriteLine("Pour quitter tapez 0");
             Console.WriteLine("C'est au tour de : " + this.T.Id);
             Console.WriteLine(" Votre choix ? : ");
         }
-        public void AffichageVictoire(int Gagnant,bool a )
+        private void AffichageGagnant(int gagnant)
         {
-            if (Gagnant == 1)
+            if (gagnant == 1)
             {
-                Console.WriteLine("Le joueur X a gagné !");
-                a = false;
+                Console.WriteLine("Le joueur " + this.X.Id + " a gagné !");
             }
-            else if (Gagnant == 0)
+            else if (gagnant == 0)
             {
-                Console.WriteLine("Le joueur O a gagné !");
-                a = false;
-            }
-            else
-            {
-                Console.WriteLine("Partie en cours...");
+                Console.WriteLine("Le joueur " + this.O.Id + " a gagné !");
             }
         }
 
-        public void AffichageComplet()
+
+        #endregion
+        public void BouclePartieLocal()
         {
             // initialisation de la partie
             bool partieEnCours = true;
             int gagnant = -1;
-            while (partieEnCours == true)
+            this.Affichage("choix");
+            while (partieEnCours == true) // boucle de la partie
             {
                 this.Affichage("choix");
-                string rep = Console.ReadLine();
-                T.Jouer(Convert.ToInt32(rep), this);
-
-                // Affichage si fin de la manche
-                VerifFin(gagnant,partieEnCours);
-                if (gagnant != -1)
+                string? rep = Console.ReadLine();
+                int choix = Convert.ToInt32(rep);
+                VerifRep(ref choix);
+                if (choix == 0)
                 {
+                    Console.WriteLine("Vous quittez la partie...");
+                    Console.WriteLine("Cliquez sur ENTREE pour continuer");
+                    Console.ReadLine();
                     partieEnCours = false;
                 }
+                T.Jouer(choix, this);
+                // Verification si fin de la manche
+                if (VerifFin(ref gagnant) == false)
+                {
+                    partieEnCours = false;
+                    this.Affichage("sanschoix");
+                    AffichageGagnant(gagnant);
+                }
+                else
+                {
+                    JoueurSuivant();
+                }
 
-
-                this.Affichage(" ");
-                JoueurSuivant();
             }
+
         }
-        #endregion
+
 
     }
 }
