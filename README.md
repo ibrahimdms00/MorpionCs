@@ -5,7 +5,7 @@ Ce projet est mon tout premier code réalisé en Programmation Orientée Objet (
 ## Note de l'auteur
 > **Ce projet est mon tout premier code réalisé en Programmation Orientée Objet (POO).**
 >
-> Il a été conçu et structuré de A à Z par mes soins pour valider ma transition du langage Pascal vers le C#. L'intégralité de la logique de jeu, de l'architecture des classes et de la gestion des références a été **développée sans l'aide d'IA générative**, afin de garantir une compréhension réelle des mécanismes de la POO et du fonctionnement du framework .NET.
+> Il a été conçu et structuré de A à Z par mes soins pour valider ma transition du langage Pascal vers le C#. L'intégralité de la logique de jeu, de l'architecture des classes et de la gestion des références a été **développée sans l'aide d'IA générative (ou presque)**, afin de garantir une compréhension réelle des mécanismes de la POO et du fonctionnement du framework .NET.
 
 ---
 
