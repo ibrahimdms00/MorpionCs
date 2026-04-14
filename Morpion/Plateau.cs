@@ -21,16 +21,9 @@ namespace Morpion
         public static void LancerJeu()
         {
             Console.WriteLine("=== INITIALISATION DU MORPION ===");
-
-            Console.Write("Nom du Joueur 1 (X) : ");
-            string input1 = Console.ReadLine();
-            // Si input1 est vide ou ne contient que des espaces, on met "Joueur 1"
-            string j1 = string.IsNullOrWhiteSpace(input1) ? "Joueur 1" : input1;
-
-            Console.Write("Nom du Joueur 2 (O) : ");
-            string input2 = Console.ReadLine();
-            string j2 = string.IsNullOrWhiteSpace(input2) ? "Joueur 2" : input2;
-
+            System.Threading.Thread.Sleep(2000);
+            string j1 = "X";
+            string j2 = "O";
             Plateau monJeu = new Plateau(j1, j2, j1);
             monJeu.Menu(j1, j2);
         }
@@ -57,20 +50,14 @@ namespace Morpion
         }
         public void Menu(string j1, string j2)
         {
+            bool partie = true; int i;
             bool quitter = false;
             while (quitter == false)
             {
                 Console.Clear();
                 Console.WriteLine("========= MORPION =========");
-                if (j1 == "Joueur 1" && j2 == "Joueur 2")
-                {
-                    Console.WriteLine("Bienvenue dans le Morpion !");
-                }
-                else
-                {
-                    Console.WriteLine($"Salut {j1} et {j2}");
-                }
-
+                Console.WriteLine($"Joueur 1 : {j1}");
+                Console.WriteLine($"Joueur 2 : {j2}");
                 Console.WriteLine("1/ Jouer une partie en local");
                 Console.WriteLine("2/ Jouer une partie contre l'IA (en cours de développement)");
                 Console.WriteLine("3/ Paramètres");
@@ -82,11 +69,47 @@ namespace Morpion
                 switch (choix)
                 {
                     case 1:
-                        RemplirTableau();
-                        this.BouclePartieLocal();
+                        partie = true; i = 1;
+                        while (partie == true)
+                        {
+                            RemplirTableau();
+                            this.BouclePartieLocal(ref i);
+                            if (i == 0)
+                            {
+                                partie = false;
+                            }
+                            else if (i == 1)
+                            {
+                                partie = true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Erreur : Boucle Menu");
+                            }
+                        }
+                        
                         break;
                     case 2:
-                        Console.WriteLine("En cours de développement...");
+                        partie = true; i = 1; int j; 
+                        while (partie == true)
+                        {
+                            RemplirTableau();
+                            Ia.DemandeJoueur(out j);
+                            this.T.Id = j.ToString();
+                            this.BouclePartieLocal(ref i);
+                            if (i == 0)
+                            {
+                                partie = false;
+                            }
+                            else if (i == 1)
+                            {
+                                partie = true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Erreur : Boucle Menu");
+                            }
+                        }
                         break;
                     case 3:
                         Console.WriteLine("En cours de développement...");
@@ -123,7 +146,18 @@ namespace Morpion
             return rep;
             
         }
-       
+
+        public bool CaseLibre(int casechoisi)
+        {
+            CaseToGrille(casechoisi, out int i, out int j);
+            if (Grille[i, j] != this.O.Id && Grille[i, j] != this.X.Id)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
         private bool Vide()
         {
             int k = 1;
@@ -192,6 +226,7 @@ namespace Morpion
                 }
             }
         }
+
         private int VerifVictoire()
         {
             int i = 0; int j = 0;
@@ -329,7 +364,7 @@ namespace Morpion
 
 
         #endregion
-        public void BouclePartieLocal()
+        public void BouclePartieLocal(ref int i)
         {
             // initialisation de la partie
             bool partieEnCours = true;
@@ -347,6 +382,7 @@ namespace Morpion
                     Console.WriteLine("Cliquez sur ENTREE pour continuer");
                     Console.ReadLine();
                     partieEnCours = false;
+                    i = 0; // retourner au menu
                 }
                 T.Jouer(choix, this);
                 // Verification si fin de la manche
@@ -355,6 +391,55 @@ namespace Morpion
                     partieEnCours = false;
                     this.Affichage("sanschoix");
                     AffichageGagnant(gagnant);
+                    Console.WriteLine("Pour continuer cliquez sur ENTREE");
+                    Console.ReadLine();
+                    i = 1; // rejouer une partie
+                }
+                else
+                {
+                    JoueurSuivant();
+                }
+
+            }
+
+        }
+
+        public void BouclePartieIA(ref int i)
+        {
+            // initialisation de la partie
+            bool partieEnCours = true;
+            int gagnant = -1;
+            this.Affichage("choix");
+            while (partieEnCours == true) // boucle de la partie
+            {
+                if (this.T.Id == "IA")
+                {
+                    T.JouerIA(1, this);
+                }
+                this.Affichage("choix");
+                string? rep = Console.ReadLine();
+                int choix = Convert.ToInt32(rep);
+                VerifRep(ref choix);
+
+
+                if (choix == 0)
+                {
+                    Console.WriteLine("Vous quittez la partie...");
+                    Console.WriteLine("Cliquez sur ENTREE pour continuer");
+                    Console.ReadLine();
+                    partieEnCours = false;
+                    i = 0; // retourner au menu
+                }
+                T.Jouer(choix, this);
+                // Verification si fin de la manche
+                if (VerifFin(ref gagnant) == false)
+                {
+                    partieEnCours = false;
+                    this.Affichage("sanschoix");
+                    AffichageGagnant(gagnant);
+                    Console.WriteLine("Pour continuer cliquez sur ENTREE");
+                    Console.ReadLine();
+                    i = 1; // rejouer une partie
                 }
                 else
                 {

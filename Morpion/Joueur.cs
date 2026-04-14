@@ -9,10 +9,12 @@ namespace Morpion
     class Joueur
     {
         private string id;
+        private Ia Bot;
 
         public Joueur(string j)
         {
             this.id = j;
+            this.Bot = new Ia(j);
         }
 
         public string Id
@@ -29,8 +31,14 @@ namespace Morpion
                 p.Grille[i, j] = this.id;
             }
         }
+        public void JouerIA(int difficulte, Plateau p)
+        {
+            this.Bot.JouerAleatoire(difficulte ,p);
+        }
+
+
+
 
     }
-
 }
 
