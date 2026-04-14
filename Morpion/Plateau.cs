@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +13,43 @@ namespace Morpion
         private Joueur X;
         private Joueur O;
         private Joueur T;
+        public Plateau(string JX, string JO, string commence)
+        {
+            grille = new string[3, 3];
+            this.X = new Joueur(JX,1);
+            this.O = new Joueur(JO,2);
+            this.T = new Joueur("RAS",1);
+            if (commence == JX)
+            {
+                this.T.Id = this.X.Id;
+            }
+            else if (commence == JO)
+            {
+                this.T.Id = this.O.Id;
+            }
+            else
+            {
+                Console.WriteLine("Erreur : Précisez le joueur qui commence ");
+            }
+        }
+
+        #region Statiques et accesseurs
         public string[,] Grille
         {
             get { return this.grille; }
             set { grille = value; }
         }
-        // Dans Plateau.cs
+
+        public Joueur JO
+        {
+            get { return this.O; }
+            set { O = value; }
+        }
+        public Joueur JX
+        {
+            get { return this.X; }
+            set { X = value; }
+        }
         public static void LancerJeu()
         {
             Console.WriteLine("=== INITIALISATION DU MORPION ===");
@@ -25,30 +57,81 @@ namespace Morpion
             string j1 = "X";
             string j2 = "O";
             Plateau monJeu = new Plateau(j1, j2, j1);
-            monJeu.Menu(j1, j2);
+            monJeu.Menu();
         }
-
-
-        public Plateau (string JX, string JO,string commence)
+        public void ChoisirCouleur(string contenuPion, int codeCouleur)
         {
-            grille = new string[3, 3];
-            this.X = new Joueur(JX);
-            this.O = new Joueur(JO);
-            this.T = new Joueur("RAS");
-            if (commence == JX)
+            switch (codeCouleur)
             {
-                this.T.Id = this.X.Id;
-            }
-            else if (commence == JO) 
-            {
-                this.T.Id = this.O.Id;
-            }
-            else 
-            { 
-                Console.WriteLine("Erreur : Précisez le joueur qui commence ");
+                case 1: Console.ForegroundColor = ConsoleColor.Red; break;
+                case 2: Console.ForegroundColor = ConsoleColor.Blue; break;
+                case 3: Console.ForegroundColor = ConsoleColor.Yellow; break;
+                case 4: Console.ForegroundColor = ConsoleColor.Magenta; break;
+                case 5: Console.ForegroundColor = ConsoleColor.Cyan; break;
+                default: Console.ResetColor(); break;
             }
         }
-        public void Menu(string j1, string j2)
+
+        public void Parametres()
+        {
+            Console.Clear();
+            Console.WriteLine("========= PARAMETRES =========");
+
+            Console.WriteLine("1/ Changer le symbole des joueurs");
+            Console.WriteLine("2/ Changer la couleur des pions");
+            Console.WriteLine("3/ Retour au menu principal");
+            Console.WriteLine("Votre choix ? : ");
+            string? rep = Console.ReadLine();
+            int choix = Convert.ToInt32(rep);
+            VerifRep(ref choix);
+            switch (choix)
+            {
+                case 1:
+                    Console.WriteLine("Pour quel joueur ?");
+                    Console.WriteLine("1/ " + this.X.Id);
+                    Console.WriteLine("2/ " + this.O.Id);
+                    string choixj1 = Console.ReadLine();
+                    if (choixj1 == "1")
+                      {
+                        Console.Write("Nouveau symbole pour " + this.X.Id + " : ");
+                        string jo = Console.ReadLine();
+                        this.X.Id = jo;
+                       }
+                     else if (choixj1 == "2")
+                       {
+                         Console.Write("Nouveau symbole pour " + this.O.Id + " : ");
+                         string jo = Console.ReadLine();
+                         this.O.Id = jo;
+                        }
+                      break;
+                case 2:
+                    // Choix pour le Joueur X
+                    Console.WriteLine($"--- Couleur pour {this.X.Id} ---");
+                    Console.WriteLine("1. Rouge | 2. Bleu | 3. Jaune | 4. Magenta | 5. Cyan");
+                    Console.Write("Votre choix : ");
+                    this.X.Couleur = Convert.ToInt32(Console.ReadLine()); // On stocke dans X
+
+                    // Choix pour le Joueur O
+                    Console.WriteLine($"\n--- Couleur pour {this.O.Id} ---");
+                    Console.WriteLine("1. Rouge | 2. Bleu | 3. Jaune | 4. Magenta | 5. Cyan");
+                    Console.Write("Votre choix : ");
+                    this.O.Couleur = Convert.ToInt32(Console.ReadLine()); // On stocke dans O
+
+                    Console.WriteLine("\nCouleurs enregistrées !");
+                    System.Threading.Thread.Sleep(1000);
+                    break;
+                case 3:
+                    
+                    break;
+                default:
+                    Console.WriteLine("Erreur : Choisissez un chiffre entre 1 et 3.");
+                    break;
+            }
+        }
+
+        #endregion
+        #region Menu et boucle principale
+        public void Menu()
         {
             bool partie = true; int i;
             bool quitter = false;
@@ -56,8 +139,15 @@ namespace Morpion
             {
                 Console.Clear();
                 Console.WriteLine("========= MORPION =========");
-                Console.WriteLine($"Joueur 1 : {j1}");
-                Console.WriteLine($"Joueur 2 : {j2}");
+
+                ChoisirCouleur(this.X.Id, this.X.Couleur);
+                Console.WriteLine($"Joueur 1 : " + this.X.Id);
+                Console.ResetColor();
+
+                ChoisirCouleur(this.O.Id, this.O.Couleur);
+                Console.WriteLine($"Joueur 2 : " + this.O.Id);
+                Console.ResetColor();
+
                 Console.WriteLine("1/ Jouer une partie en local");
                 Console.WriteLine("2/ Jouer une partie contre l'IA (en cours de développement)");
                 Console.WriteLine("3/ Paramètres");
@@ -90,13 +180,13 @@ namespace Morpion
                         
                         break;
                     case 2:
-                        partie = true; i = 1; int j; 
+                        partie = true; i = 1; string j;
+                        Ia.DemandeJoueur(out j, this);
+                        Ia.DemandeDifficulte(out int difficulte);
                         while (partie == true)
                         {
                             RemplirTableau();
-                            Ia.DemandeJoueur(out j);
-                            this.T.Id = j.ToString();
-                            this.BouclePartieLocal(ref i);
+                            this.BouclePartieIA(ref i);
                             if (i == 0)
                             {
                                 partie = false;
@@ -112,7 +202,7 @@ namespace Morpion
                         }
                         break;
                     case 3:
-                        Console.WriteLine("En cours de développement...");
+                        Parametres();
                         break;
                     case 4:
                         Console.WriteLine("Merci d'avoir joué !");
@@ -126,27 +216,23 @@ namespace Morpion
 
         }
 
-        private string JoueurSuivant()
+        private void JoueurSuivant()
         {
-            string rep;
             if (this.T.Id == this.X.Id)
             {
                 this.T.Id = this.O.Id;
-                rep = "J1";
+                this.T.Couleur = this.O.Couleur;
             }
             else if (this.T.Id == this.O.Id)
             { 
                 this.T.Id = this.X.Id;
-                rep = "J2";
+                this.T.Couleur = this.X.Couleur;
             }
-            else
-            {
-                rep = "Erreur methode JoueurSuivant";
-            }
-            return rep;
-            
+
         }
 
+        #endregion
+        #region Gestion du plateau
         public bool CaseLibre(int casechoisi)
         {
             CaseToGrille(casechoisi, out int i, out int j);
@@ -193,7 +279,7 @@ namespace Morpion
             
             return rep;
         }
-
+        #endregion
         #region Logique de conversion 
         public void CaseToGrille(int casechoisi, out int i, out int j)
         {
@@ -309,41 +395,70 @@ namespace Morpion
         #region Affichage Tableau
         private void Affichage(string c)
         {
-            
+
             if (c == "choix")
             {
                 Console.Clear();
                 Console.WriteLine("========= MORPION =========");
                 for (int i = 0; i < 3; i++)
                 {
-                    // On dessine une ligne
-                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
+                    for (int j = 0; j < 3; j++)
+                    {
+                        string contenu = Grille[i, j];
+                        if (contenu == this.X.Id) ChoisirCouleur(contenu, this.X.Couleur); 
+                        else if (contenu == this.O.Id) ChoisirCouleur(contenu,this.O.Couleur);
+                        else Console.ForegroundColor = ConsoleColor.Gray; 
+                        Console.Write($" {contenu} ");
+                        Console.ResetColor();
+                        if (j < 2) Console.Write("|");
+                    }
+                    Console.WriteLine();
                     if (i < 2) Console.WriteLine("-----------");
                 }
                 this.AffichageChoix();
-            }
-            if (c == "SansClear")
-            {
-                Console.WriteLine("========= MORPION =========");
-                for (int i = 0; i < 3; i++)
+             } 
+                if (c == "SansClear")
                 {
-                    // On dessine une ligne
-                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
-                    if (i < 2) Console.WriteLine("-----------");
+                    Console.WriteLine("========= MORPION =========");
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            string contenu = Grille[i, j];
+                            if (contenu == this.X.Id) ChoisirCouleur(contenu, this.X.Couleur);
+                            else if (contenu == this.O.Id) ChoisirCouleur(contenu, this.O.Couleur);
+                            else Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($" {contenu} ");
+                            Console.ResetColor();
+                            if (j < 2) Console.Write("|");
+                        }
+                        Console.WriteLine();
+                        if (i < 2) Console.WriteLine("-----------");
+                    }
+            }
+                if (c == "sanschoix")
+                {
+                    Console.Clear();
+                    Console.WriteLine("========= MORPION =========");
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            string contenu = Grille[i, j];
+                            if (contenu == this.X.Id) ChoisirCouleur(contenu, this.X.Couleur);
+                            else if (contenu == this.O.Id) ChoisirCouleur(contenu, this.O.Couleur);
+                            else Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.Write($" {contenu} ");
+                            Console.ResetColor();
+                            if (j < 2) Console.Write("|");
+                        }
+                        Console.WriteLine();
+                        if (i < 2) Console.WriteLine("-----------");
                 }
             }
-            if (c == "sanschoix")
-            {
-                Console.Clear();
-                Console.WriteLine("========= MORPION =========");
-                for (int i = 0; i < 3; i++)
-                {
-                    // On dessine une ligne
-                    Console.WriteLine($" {Grille[i, 0]} | {Grille[i, 1]} | {Grille[i, 2]} ");
-                    if (i < 2) Console.WriteLine("-----------");
-                }
             }
-        }
+        
+    
         private void AffichageChoix()
         {
             Console.WriteLine("Pour quitter tapez 0");
@@ -364,6 +479,7 @@ namespace Morpion
 
 
         #endregion
+        #region Boucle de jeu
         public void BouclePartieLocal(ref int i)
         {
             // initialisation de la partie
@@ -412,25 +528,31 @@ namespace Morpion
             this.Affichage("choix");
             while (partieEnCours == true) // boucle de la partie
             {
-                if (this.T.Id == "IA")
+                if (this.T.Id == this.O.Id)
                 {
+                    this.Affichage("sanschoix");
+                    System.Threading.Thread.Sleep(1000);
+
                     T.JouerIA(1, this);
+                    Console.WriteLine("selem");
+
                 }
-                this.Affichage("choix");
-                string? rep = Console.ReadLine();
-                int choix = Convert.ToInt32(rep);
-                VerifRep(ref choix);
-
-
-                if (choix == 0)
+                else
                 {
-                    Console.WriteLine("Vous quittez la partie...");
-                    Console.WriteLine("Cliquez sur ENTREE pour continuer");
-                    Console.ReadLine();
-                    partieEnCours = false;
-                    i = 0; // retourner au menu
+                    this.Affichage("choix");
+                    string? rep = Console.ReadLine();
+                    int choix = Convert.ToInt32(rep);
+                    VerifRep(ref choix);
+                    if (choix == 0)
+                    {
+                        Console.WriteLine("Vous quittez la partie...");
+                        Console.WriteLine("Cliquez sur ENTREE pour continuer");
+                        Console.ReadLine();
+                        partieEnCours = false;
+                        i = 0; // retourner au menu
+                    }
+                    T.Jouer(choix, this);
                 }
-                T.Jouer(choix, this);
                 // Verification si fin de la manche
                 if (VerifFin(ref gagnant) == false)
                 {
@@ -449,6 +571,7 @@ namespace Morpion
             }
 
         }
+        #endregion
 
 
     }

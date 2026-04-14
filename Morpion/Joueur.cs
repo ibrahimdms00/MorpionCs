@@ -10,12 +10,21 @@ namespace Morpion
     {
         private string id;
         private Ia Bot;
+        private int couleur;
 
-        public Joueur(string j)
+        public Joueur(string j,int couleur)
         {
             this.id = j;
+            this.couleur = couleur;
             this.Bot = new Ia(j);
         }
+
+        public int Couleur
+        {
+            get { return this.couleur; }
+            set { this.couleur = value; }
+        }
+
 
         public string Id
         {
@@ -33,7 +42,9 @@ namespace Morpion
         }
         public void JouerIA(int difficulte, Plateau p)
         {
-            this.Bot.JouerAleatoire(difficulte ,p);
+            int casechoisi = 0;
+            this.Bot.JouerAleatoire(difficulte ,p,out casechoisi);
+            this.Jouer(casechoisi, p);
         }
 
 
